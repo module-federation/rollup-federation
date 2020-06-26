@@ -10,6 +10,7 @@ import MagicString from 'magic-string';
  * @typedef {object} FederationOptions
  * @property {string} name
  * @property {FederatedRemotes} remotes
+ * @property {{ [package: string]: string }} shared
  */
 
 /**
@@ -24,17 +25,45 @@ export default function federation(options) {
     remotes.push(Object.assign({}, { id, config: providedRemotes[id] }));
   });
 
+  const shared = options.shared || {};
+
   const virtualMod = virtual({
     __federation__: `const remotesMap = {
   ${remotes
     .map(
-      (remote) => `[${JSON.stringify(remote.id)}]: () => import(${JSON.stringify(remote.config)})`
+      (remote) => `${JSON.stringify(remote.id)}: () => import(${JSON.stringify(remote.config)})`
     )
     .join(',\n  ')}
 };
+
+const shareScope = {
+  ${Object.entries(shared).map(
+    ([toShare, version]) => `${JSON.stringify(toShare)}: {
+      get: () => import(${JSON.stringify(toShare)}).then(r => () => r),
+      version: ${JSON.stringify(version.split('.').reduce((p, c) => {
+        const parsed = Number.parseInt(c.replace(/\D/g,''), 10);
+        if (Number.isSafeInteger(parsed)) {
+          p.push(parsed);
+        }
+        return p;
+      }, []))}
+    }`
+  ).join(',\n  ')}
+};
+
+const initMap = {};
+
 export default {
-  ensure: (remoteId) => {
-    return remotesMap[remoteId]();
+  ensure: async (remoteId) => {
+    const remote = await remotesMap[remoteId]();
+
+    if (!initMap[remoteId]) {
+      remote.init(shareScope);
+      initMap[remoteId] = true;
+    }
+    console.log(remote);
+
+    return remote;
   }
 };`
   });
