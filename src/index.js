@@ -8,12 +8,12 @@ import MagicString from 'magic-string';
 
 /**
  * @typedef {object} FederationOptions
- * @property {string} name
  * @property {FederatedRemotes} remotes
  * @property {{ [package: string]: string }} shared
  */
 
 /**
+ * Plugin which enables consumption of Federated Modules.
  * @param {FederationOptions} options
  */
 export default function federation(options) {
