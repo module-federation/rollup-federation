@@ -1,0 +1,43 @@
+name: Release
+
+on:
+  push:
+    branches: [release]
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    env:
+      CI: true
+    steps:
+      - uses: actions/checkout@master
+        with:
+          fetch-depth: 0
+
+      - name: Setup environment
+        id: setups
+        run: |-
+          echo "::set-output name=yarn_cache::$(yarn cache dir)"
+          echo "::set-output name=node_version::$(jq -r '.volta.node' package.json)"
+
+      - name: Setup Node ${{ steps.setups.outputs.node_version }}
+        uses: actions/setup-node@master
+        with:
+          node-version: ${{ steps.setups.outputs.node_version }}
+
+      - name: Yarn cache
+        uses: actions/cache@v1
+        with:
+          path: ${{ steps.setups.outputs.yarn_cache }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}-node-${{ steps.setups.outputs.node_version }}
+
+      - run: yarn --frozen-lockfile
+
+      - name: Create Release or Publish
+        uses: changesets/action@master
+        with:
+          publish: yarn release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
