@@ -1,5 +1,5 @@
 {
-  "name": "rollup-federation",
+  "name": "@module-federation/rollup-federation",
   "version": "0.0.0",
   "description": "Multiple separate builds should form a single application.",
   "keywords": [
@@ -24,7 +24,8 @@
   "scripts": {
     "format": "prettier --write \"{*,src/*}+.+(js)\"",
     "build": "rollup -c",
-    "watch": "rollup -c -w"
+    "watch": "rollup -c -w",
+    "release": "yarn build && yarn changeset publish"
   },
   "prettier": {
     "bracketSpacing": true,
@@ -41,6 +42,7 @@
     "magic-string": "^0.25.7"
   },
   "devDependencies": {
+    "@changesets/cli": "^2.9.1",
     "@rollup/plugin-node-resolve": "^7.0.0",
     "prettier": "^2.0.5",
     "rollup": "^2.0.0"
