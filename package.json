@@ -1,26 +1,7 @@
 {
   "name": "rollup-federation",
   "version": "0.0.0",
-  "publishConfig": {
-    "access": "public"
-  },
   "description": "Multiple separate builds should form a single application.",
-  "license": "MIT",
-  "repository": "module-federation/rollup-federation",
-  "author": "Jacob Ebey",
-  "homepage": "https://github.com/module-federation/rollup-federation",
-  "bugs": "https://github.com/module-federation/rollup-federation/issues",
-  "main": "dist/index.js",
-  "module": "dist/index.es.js",
-  "scripts": {
-    "build": "rollup -c",
-    "watch": "rollup -c -w"
-  },
-  "files": [
-    "dist",
-    "README.md",
-    "LICENSE"
-  ],
   "keywords": [
     "rollup",
     "plugin",
@@ -28,16 +9,50 @@
     "modules",
     "federation"
   ],
+  "homepage": "https://github.com/module-federation/rollup-federation",
+  "bugs": "https://github.com/module-federation/rollup-federation/issues",
+  "repository": "module-federation/rollup-federation",
+  "license": "MIT",
+  "author": "Jacob Ebey",
+  "main": "dist/index.js",
+  "module": "dist/index.es.js",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "format": "prettier --write \"{*,src/*}+.+(js)\"",
+    "build": "rollup -c",
+    "watch": "rollup -c -w"
+  },
+  "prettier": {
+    "bracketSpacing": true,
+    "printWidth": 80,
+    "proseWrap": "always",
+    "singleQuote": true,
+    "tabWidth": 4,
+    "trailingComma": "all",
+    "useTabs": true
+  },
   "dependencies": {
     "@rollup/plugin-virtual": "^2.0.0",
     "estree-walker": "^1.0.1",
     "magic-string": "^0.25.7"
   },
+  "devDependencies": {
+    "@rollup/plugin-node-resolve": "^7.0.0",
+    "prettier": "^2.0.5",
+    "rollup": "^2.0.0"
+  },
   "peerDependencies": {
     "rollup": "^1.20.0||^2.0.0"
   },
-  "devDependencies": {
-    "@rollup/plugin-node-resolve": "^7.0.0",
-    "rollup": "^2.0.0"
+  "publishConfig": {
+    "access": "public"
+  },
+  "volta": {
+    "node": "12.18.1",
+    "yarn": "1.22.4"
   }
 }
