@@ -4,6 +4,16 @@
 
 This plugin essentially reproduces the functionality of Webpack's [ContainerReferencePlugin](https://webpack.js.org/concepts/module-federation/#containerreferenceplugin-low-level) and [OverridablesPlugin](https://webpack.js.org/concepts/module-federation/#overridablesplugin-low-level).
 
+## Limitations
+
+This is **not** full support for Module Federation, there are limitations:
+
+- Can not act as a container.
+  - This means you can not federate modules from Rollup to Webpack
+- Both the Rollup and Webpack container builds need to have the same target
+  - Has only been tested with [SystemJS](https://github.com/systemjs/systemjs)
+  - Should theoretically work with [AMD](https://requirejs.org/docs/whyamd.html#amd) as well, give it a try and provide feedback.
+
 ## Requirements
 
 This plugin requires an [LTS](https://github.com/nodejs/Release) Node version (v8.0.0+) and Rollup v1.20.0+.
