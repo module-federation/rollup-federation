@@ -36,18 +36,28 @@ export default function federation(options) {
     .join(',\n  ')}
 };
 
+const processModule = (mod) => {
+  if (mod && mod.__useDefault) {
+    return mod.default;
+  }
+
+  return mod;
+}
+
 const shareScope = {
   ${Object.entries(shared).map(
     ([toShare, version]) => `${JSON.stringify(toShare)}: {
-      get: () => import(${JSON.stringify(toShare)}).then(r => () => r),
-      version: ${JSON.stringify(version.split('.').reduce((p, c) => {
-        const parsed = Number.parseInt(c.replace(/\D/g,''), 10);
-        if (Number.isSafeInteger(parsed)) {
-          p.push(parsed);
-        }
-        return p;
-      }, []))}
-    }`
+    get: () => import(${JSON.stringify(toShare)}).then(r => () => processModule(r)),
+    loaded: ${JSON.stringify((typeof version === 'object' && version.eager) || false)},
+    singleton: ${JSON.stringify((typeof version === 'object' && version.singleton) || false)},
+    version: ${JSON.stringify(((typeof version === 'object' && version.requiredVersion) || version).split('.').reduce((p, c) => {
+      const parsed = Number.parseInt(c.replace(/\D/g,''), 10);
+      if (Number.isSafeInteger(parsed)) {
+        p.push(parsed);
+      }
+      return p;
+    }, []))}
+  }`
   ).join(',\n  ')}
 };
 
@@ -61,7 +71,6 @@ export default {
       remote.init(shareScope);
       initMap[remoteId] = true;
     }
-    console.log(remote);
 
     return remote;
   }
@@ -71,14 +80,19 @@ export default {
   return {
     name: 'federation',
 
-    resolveId(source, importer) {
-      const v = virtualMod.resolveId(source, importer);
+    resolveId(...args) {
+      const v = virtualMod.resolveId.call(this, ...args);
       if (v) {
         return v;
       }
     },
 
-    load: virtualMod.load,
+    load(...args) {
+      const v = virtualMod.load.call(this, ...args);
+      if (v) {
+        return v;
+      }
+    },
 
     transform(code) {
       let ast = null;
