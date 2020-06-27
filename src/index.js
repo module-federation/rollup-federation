@@ -27,8 +27,14 @@ export default function federation(options) {
 
   const shared = options.shared || {};
 
+  const eagerShared = Object.entries(shared).filter(([_, version]) => typeof version === 'object' && version.eager);
   const virtualMod = virtual({
-    __federation__: `const remotesMap = {
+    __federation__: `${
+      eagerShared
+        .map(([toShare, version], idx) => `import eager${idx} from ${JSON.stringify(toShare)}`)
+        .join('\n')
+}
+const remotesMap = {
   ${remotes
     .map(
       (remote) => `${JSON.stringify(remote.id)}: () => import(${JSON.stringify(remote.config)})`
@@ -47,7 +53,9 @@ const processModule = (mod) => {
 const shareScope = {
   ${Object.entries(shared).map(
     ([toShare, version]) => `${JSON.stringify(toShare)}: {
-    get: () => import(${JSON.stringify(toShare)}).then(r => () => processModule(r)),
+    ${(typeof version === 'object' && version.eager)
+      ? `get: () => () => processModule(${`eager${eagerShared.findIndex(e => e[0] === toShare)}`}),`
+      : `get: () => import(${JSON.stringify(toShare)}).then(r => () => processModule(r)),`}
     loaded: ${JSON.stringify((typeof version === 'object' && version.eager) || false)},
     singleton: ${JSON.stringify((typeof version === 'object' && version.singleton) || false)},
     version: ${JSON.stringify(((typeof version === 'object' && version.requiredVersion) || version).split('.').reduce((p, c) => {
