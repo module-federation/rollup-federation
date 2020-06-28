@@ -125,6 +125,10 @@ export default {
 			}
 		},
 
+		generateBundle() {
+			debugger;
+		},
+
 		transform(code) {
 			let ast = null;
 			try {

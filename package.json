@@ -22,10 +22,11 @@
 		"LICENSE"
 	],
 	"scripts": {
-		"format": "prettier --write \"{*,README,src/*}+.+(js|md)\"",
+		"format": "prettier --write \"{*,README,src/*,test/*}+.+(js|md)\"",
 		"build": "rollup -c",
 		"watch": "rollup -c -w",
-		"release": "yarn build && yarn changeset publish"
+		"release": "yarn build && yarn changeset publish",
+		"test": "uvu -r esm -i fixtures test/"
 	},
 	"prettier": {
 		"bracketSpacing": true,
@@ -44,8 +45,10 @@
 	"devDependencies": {
 		"@changesets/cli": "^2.9.1",
 		"@rollup/plugin-node-resolve": "^7.0.0",
+		"esm": "^3.2.25",
 		"prettier": "^2.0.5",
-		"rollup": "^2.0.0"
+		"rollup": "^2.0.0",
+		"uvu": "^0.0.17"
 	},
 	"peerDependencies": {
 		"rollup": "^1.20.0||^2.0.0"
