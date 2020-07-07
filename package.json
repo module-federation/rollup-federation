@@ -22,7 +22,7 @@
 		"LICENSE"
 	],
 	"scripts": {
-		"format": "prettier --write \"{*,README,src/*}+.+(js|md)\"",
+		"format": "prettier --write \"{*,src/*}+.+(js|md|json)\"",
 		"build": "rollup -c",
 		"watch": "rollup -c -w",
 		"release": "yarn build && yarn changeset publish"

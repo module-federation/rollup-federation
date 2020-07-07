@@ -1,21 +1,58 @@
 {
-  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    ":combinePatchMinorReleases",
-    ":ignoreUnstable",
-    ":prImmediately",
-    ":semanticPrefixFixDepsChoreOthers",
-    ":updateNotScheduled",
-    ":automergeDisabled",
-    ":ignoreModulesAndTests",
-    ":maintainLockFilesDisabled",
-    ":autodetectPinVersions",
-    ":prHourlyLimit4",
-    ":prConcurrentLimit20",
-    "group:monorepos",
-    "group:recommended",
-    "helpers:disableTypesNodeMajor",
-    ":pinAllExceptPeerDependencies",
-    ":pinOnlyDevDependencies"
-  ]
+	"$schema": "https://docs.renovatebot.com/renovate-schema.json",
+	"extends": [
+		":prHourlyLimit4",
+		":prNotPending",
+		":rebaseStalePrs",
+		":renovatePrefix",
+		":combinePatchMinorReleases",
+		":automergeDisabled",
+		":prConcurrentLimit20",
+		"group:monorepos",
+		"group:recommended",
+		"helpers:disableTypesNodeMajor",
+		":pinAllExceptPeerDependencies",
+		":pinOnlyDevDependencies"
+	],
+	"postUpdateOptions": ["yarnDedupeHighest"],
+	"schedule": ["after 4pm and before 8am every weekday", "every weekend"],
+	"rangeStrategy": "auto",
+	"packageRules": [
+		{
+			"depTypeList": ["dependencies"],
+			"semanticCommitType": "fix",
+			"rangeStrategy": "replace"
+		},
+		{
+			"commitMessageExtra": "{{newValue}}",
+			"commitMessageTopic": "{{depName}}",
+			"managers": ["npm", "nvm"]
+		},
+		{
+			"commitMessageExtra": "",
+			"depTypeList": ["devDependencies"],
+			"groupName": "dev dependencies (npm)",
+			"managers": ["npm"],
+			"recreateClosed": true,
+			"schedule": "after 1pm on Monday"
+		},
+		{
+			"commitMessageExtra": "",
+			"depTypeList": ["peerDependencies"],
+			"groupName": "peer dependencies (npm)",
+			"managers": ["npm"],
+			"recreateClosed": true,
+			"schedule": "after 1pm on Monday",
+			"rangeStrategy": "widen"
+		},
+		{
+			"extends": ["group:monorepos"],
+			"recreateClosed": true
+		},
+		{
+			"automerge": true,
+			"prPriority": 98,
+			"updateTypes": ["pin"]
+		}
+	]
 }
