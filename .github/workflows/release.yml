@@ -27,7 +27,7 @@ jobs:
           node-version: ${{ steps.setups.outputs.node_version }}
 
       - name: Yarn cache
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: ${{ steps.setups.outputs.yarn_cache }}
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}-node-${{ steps.setups.outputs.node_version }}
